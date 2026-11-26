@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Portail de données partagées – AUDC</title>
+  <meta name="description" content="Indicateurs du territoire produits par l’agence d’urbanisme de Châlons-en-Champagne : carte, tableau et téléchargements.">
+  <link rel="stylesheet" href="assets/vendor/leaflet/leaflet.css">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <a class="evitement" href="#carte-section">Aller au contenu</a>
+
+  <header class="entete">
+    <div class="entete-marque">
+      <img class="logo" src="assets/img/logo-audc.png" alt="" width="40" height="40">
+      <div>
+        <div class="entete-titre">Portail de données partagées</div>
+        <div class="entete-sous-titre">Agence d’urbanisme de Châlons-en-Champagne</div>
+      </div>
+    </div>
+    <nav aria-label="Navigation principale">
+      <ul class="menu">
+        <li><a href="#carte-section" aria-current="page">Carte</a></li>
+        <li><a href="#donnees">Données</a></li>
+        <li><a href="#dico">Dictionnaire</a></li>
+        <li><a href="#apropos">À propos</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <div id="bandeau-maquette" class="bandeau" hidden>Version de test : données issues d’une base personnelle, sans valeur officielle.</div>
+
+  <main>
+    <section class="intro">
+      <h1>Données géographiques</h1>
+      <p>Vues du schéma geo_standards publiées automatiquement. Choisissez une vue et une colonne à représenter, consultez la carte et téléchargez les données.</p>
+    </section>
+
+    <p id="message" class="message" role="status" hidden></p>
+
+    <section id="carte-section" class="grille-carte">
+      <aside class="filtres" aria-label="Filtres">
+        <h2>Filtres</h2>
+        <div class="champ"><label for="theme">Vue</label><select id="theme"></select></div>
+        <div class="champ"><label for="indicateur">Indicateur</label><select id="indicateur"></select></div>
+        <div class="champ"><label for="millesime">Millésime</label><select id="millesime"></select></div>
+        <div class="champ"><label for="territoire">Schéma</label><select id="territoire"></select></div>
+        <button id="btn-afficher" type="button" class="bouton bouton-primaire">Afficher l’indicateur</button>
+      </aside>
+
+      <div class="carte-bloc">
+        <div class="carte-entete">
+          <h2 id="carte-titre">Chargement…</h2>
+          <span id="carte-source" class="discret"></span>
+        </div>
+        <div id="carte" role="region" aria-label="Carte de l’indicateur sélectionné"></div>
+        <div class="legende" aria-hidden="true">
+          <span id="legende-min">Faible</span>
+          <span class="legende-degrade">
+            <span style="background:#d9eeea"></span><span style="background:#9fd5cd"></span><span style="background:#4cb5a9"></span><span style="background:#2A9D8F"></span><span style="background:#1F3A5F"></span>
+          </span>
+          <span id="legende-max">Élevé</span>
+          <span class="discret legende-fond">Fond de carte : OpenStreetMap</span>
+        </div>
+      </div>
+    </section>
+
+    <section id="donnees" class="bloc">
+      <h2>Données de la vue</h2>
+      <div class="table-defilement">
+        <table id="table-donnees"><thead></thead><tbody></tbody></table>
+      </div>
+    </section>
+
+    <section class="telechargements" aria-label="Téléchargements">
+      <div class="bloc">
+        <h3>Tableau (CSV)</h3><p>Pour Excel et les outils d’analyse.</p>
+        <a id="dl-csv" class="bouton bouton-secondaire" href="#" download>Télécharger le CSV</a>
+      </div>
+      <div class="bloc">
+        <h3>Carte (GeoJSON)</h3><p>Données géographiques pour le web.</p>
+        <a id="dl-geojson" class="bouton bouton-secondaire" href="#" download>Télécharger le GeoJSON</a>
+      </div>
+      <div class="bloc">
+        <h3>SIG (GeoPackage)</h3><p>Pour QGIS et les logiciels SIG.</p>
+        <a id="dl-gpkg" class="bouton bouton-secondaire" href="#" download>Télécharger le GeoPackage</a>
+      </div>
+    </section>
+
+    <section id="dico" class="bloc bloc-large">
+      <h2>Dictionnaire des données</h2>
+      <p>Pour chaque indicateur : définition, source, millésime et échelle.</p>
+      <div class="table-defilement">
+        <table id="table-dico">
+          <thead><tr><th>Indicateur</th><th>Définition</th><th>Thème</th><th>Millésime</th><th>Échelle</th><th>Source</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <footer id="apropos" class="pied">
+    <div>Données produites par l’AUDC. Licence de réutilisation : <span id="pied-licence"></span>. Merci de citer la source.</div>
+    <div class="pied-droite">Dernière mise à jour : <span id="pied-date"></span><br>Contact : <span id="pied-contact"></span></div>
+  </footer>
+
+  <script src="assets/vendor/leaflet/leaflet.js"></script>
+  <script src="assets/js/app.js"></script>
+</body>
+</html>
