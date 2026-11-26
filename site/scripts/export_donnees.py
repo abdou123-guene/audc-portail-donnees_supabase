@@ -33,6 +33,10 @@ ENTIERS = {"smallint", "integer", "bigint"}
 NOMBRES = ("numeric", "double precision", "real")
 
 
+class VueIgnoree(Exception):
+    """Vue volontairement non publiée (ce n'est pas une erreur)."""
+
+
 def creer_connexion():
     """Crée la connexion à partir des variables du fichier .env."""
     load_dotenv(RACINE / ".env")
@@ -122,6 +126,8 @@ def decrire(schema, nom, commentaire, colonnes_pg, src, reglage):
                       if c["type"] in ("entier", "nombre") and c["champ"] != cle]
     if not champs_ind and cle in presents:
         champs_ind = [cle]          # repli : colorer selon l'identifiant
+    if cle not in presents and src.get("exiger_id", True):
+        raise VueIgnoree(f"pas de colonne « {cle} »")
     if not champs_ind:
         raise ValueError("aucune colonne utilisable comme indicateur")
 
@@ -185,7 +191,9 @@ def exporter_jeu(jeu, gdf):
     # 1) GeoPackage : géométries et projection d'origine (SIG)
     if chemin_gpkg.exists():
         chemin_gpkg.unlink()
-    gdf.to_file(chemin_gpkg, layer=identifiant_jeu, driver="GPKG")
+    pour_gpkg = gdf.rename(columns={c: f"{c}_source" for c in gdf.columns
+                                    if str(c).lower() == "fid"})
+    pour_gpkg.to_file(chemin_gpkg, layer=identifiant_jeu, driver="GPKG")
 
     # 2) GeoJSON : simplifié et reprojeté en WGS84 (carte web)
     web = gdf.copy()
@@ -249,7 +257,7 @@ def main():
     if not selection:
         sys.exit(f"Vue inconnue : {args.vue}")
 
-    entrees, echecs = {}, []
+    entrees, echecs, ignorees = {}, [], []
     for nom, commentaire in selection:
         print(f"Export de {schema}.{nom} ...")
         try:
@@ -260,6 +268,9 @@ def main():
             entrees[entree["id"]] = entree
             for a in entree["avertissements"]:
                 print(f"   attention : {a}")
+        except VueIgnoree as raison:
+            ignorees.append((nom, str(raison)))
+            print(f"   ignorée : {raison}")
         except Exception as erreur:  # une vue en échec ne bloque pas les autres
             echecs.append((nom, str(erreur)))
             print(f"   ÉCHEC : {erreur}")
@@ -280,10 +291,13 @@ def main():
     SORTIE.mkdir(parents=True, exist_ok=True)
     chemin_catalogue.write_text(json.dumps(catalogue, ensure_ascii=False, indent=2),
                                 encoding="utf-8")
-    print(f"Terminé : {len(entrees)} vue(s) exportée(s), {len(echecs)} échec(s).")
-    if echecs:
-        for nom, e in echecs:
-            print(f" - {nom} : {e}")
+    print(f"Terminé : {len(entrees)} vue(s) exportée(s), {len(ignorees)} ignorée(s), "
+          f"{len(echecs)} échec(s).")
+    for nom, e in echecs:
+        print(f" - échec {nom} : {e}")
+    if not catalogue["jeux"]:
+        sys.exit("Aucune vue publiée : rien à afficher sur le site.")
+    if echecs and not src.get("tolerer_echecs", True):
         sys.exit(1)
 
 
