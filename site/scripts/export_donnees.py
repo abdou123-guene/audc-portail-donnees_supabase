@@ -153,7 +153,8 @@ def lire_vue(moteur, schema, jeu, srid_defaut):
     gdf = gpd.read_postgis(sql, moteur, geom_col=jeu["geom"])
     if gdf.crs is None:
         gdf = gdf.set_crs(srid_defaut)
-    gdf = gdf.rename_geometry("geom")
+    if jeu["geom"] != "geom":
+        gdf = gdf.rename_geometry("geom")
     # colonnes json / tableaux / hstore : converties en texte
     for champ, pg in jeu["types_pg"].items():
         if pg.lower() in ("json", "jsonb", "hstore") or pg.endswith("[]"):
