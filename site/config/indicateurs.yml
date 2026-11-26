@@ -1,0 +1,32 @@
+# Configuration du portail de données (mode automatique, base Supabase de test).
+# Toutes les vues du schéma ci-dessous sont découvertes et exportées vers docs/data/.
+
+site:
+  titre: "Portail de données partagées"
+  organisme: "Agence d’urbanisme de Châlons-en-Champagne"
+  contact: "[adresse e-mail]"
+  licence: "[À PRÉCISER]"
+  fond_osm: true        # true : fond de carte OpenStreetMap ; false : aucun fond
+  maquette: true        # true : affiche le bandeau « version de test »
+
+source:
+  schema: geo_standards
+  inclure_vues_materialisees: true   # false : seulement les vues classiques
+  exclure_vues: []                   # noms de vues à ne pas publier
+  colonne_geometrie: geom
+  colonne_id: id                     # clé présente dans chaque vue (int4 ou int8)
+  srid_defaut: 3943                  # utilisé seulement si la vue n'indique pas son SRID
+  simplification_m: 0                # simplification pour le web, en unités de la projection (m en 3943) ; 0 = aucune
+  source_defaut: "Base Supabase de test, schéma geo_standards"
+  colonnes_exclues: []               # colonnes à ne jamais exporter, quelle que soit la vue
+
+# Réglages facultatifs par vue (clé = nom exact de la vue). Exemple :
+# vues:
+#   v_troncon_pgrouting_conforme:
+#     libelle: "Tronçons pgRouting conformes"
+#     source: "Données de test"
+#     simplification_m: 1
+#     colonnes_exclues: [source, target]
+#     indicateurs: [pente_absolue, longueur]      # colonnes proposées pour colorer la carte
+#     definitions: {pente_absolue: "Pente en valeur absolue."}
+vues: {}
